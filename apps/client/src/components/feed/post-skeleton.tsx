@@ -18,7 +18,7 @@ export function PostSkeleton() {
         </div>
 
         {/* Book info (optional) */}
-        <div className="flex items-center space-x-3 mb-4 p-3 bg-gray-50 rounded-lg">
+        <div className="flex items-center space-x-3 mb-4 p-3 rounded-lg">
           <Skeleton className="h-12 w-8 rounded" />
           <div className="space-y-2">
             <Skeleton className="h-4 w-40" />

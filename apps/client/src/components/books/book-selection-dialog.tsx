@@ -185,7 +185,7 @@ export function BookSelectionDialog({
                 />
               </div>
 
-              <ScrollArea className="h-[400px]">
+              <ScrollArea className="h-[400px] bg-gray-50 rounded-lg p-2">
                 <div className="space-y-4">
                   {/* Google Books Results */}
                   {googleBooksResults?.data &&
@@ -195,44 +195,52 @@ export function BookSelectionDialog({
                           <BookOpen className="h-4 w-4 mr-2" />
                           Google Books Results
                         </h4>
-                        <div className="space-y-2">
+                        <div className="space-y-3">
                           {googleBooksResults.data.map((book) => (
                             <div
                               key={book.googleBooksId}
-                              className="flex items-start space-x-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer group"
+                              className="flex items-start space-x-4 p-4 border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-sm cursor-pointer group transition-all duration-200 bg-white"
                               onClick={() => handleGoogleBookSelect(book)}
                             >
-                              {book.thumbnail && (
-                                <img
-                                  src={book.thumbnail}
-                                  alt={book.title}
-                                  className="h-16 w-12 object-cover rounded flex-shrink-0"
-                                />
-                              )}
-                              <div className="flex-1 min-w-0">
-                                <div className="font-medium text-sm  truncate">
+                              <div className="flex-shrink-0">
+                                {book.thumbnail ? (
+                                  <img
+                                    src={book.thumbnail}
+                                    alt={book.title}
+                                    className="h-20 w-14 object-cover rounded-lg shadow-sm"
+                                  />
+                                ) : (
+                                  <div className="h-20 w-14 bg-gray-100 rounded-lg flex items-center justify-center">
+                                    <BookOpen className="h-6 w-6 text-gray-400" />
+                                  </div>
+                                )}
+                              </div>
+                              <div className="flex-1 min-w-0 space-y-1">
+                                <div className="font-semibold text-sm text-gray-900 truncate">
                                   {book.title}
                                 </div>
-                                <div className="text-xs text-gray-500 truncate">
+                                <div className="text-xs text-gray-600 truncate">
                                   by{" "}
                                   {book.authors?.join(", ") || "Unknown Author"}
                                 </div>
                                 {book.publishedDate && (
-                                  <div className="text-xs text-gray-400">
+                                  <div className="text-xs text-gray-500">
                                     Published: {book.publishedDate}
                                   </div>
                                 )}
                                 {book.description && (
-                                  <div className="text-xs text-gray-600 line-clamp-2 mt-1">
+                                  <div className="text-xs text-gray-600 line-clamp-2 mt-2 leading-relaxed">
                                     {book.description}
                                   </div>
                                 )}
                               </div>
-                              <div className="flex-shrink-0">
+                              <div className="flex-shrink-0 flex items-center">
                                 {isAddingBook ? (
-                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                  <Loader2 className="h-5 w-5 animate-spin text-blue-500" />
                                 ) : (
-                                  <Plus className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                  <div className="p-2 rounded-full bg-blue-50 opacity-0 group-hover:opacity-100 transition-all duration-200">
+                                    <Plus className="h-4 w-4 text-blue-600" />
+                                  </div>
                                 )}
                               </div>
                             </div>
@@ -252,35 +260,45 @@ export function BookSelectionDialog({
                         <Check className="h-4 w-4 mr-2" />
                         Your Library
                       </h4>
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         {existingBooks.data.map((book) => (
                           <div
                             key={book.id}
-                            className="flex items-start space-x-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer group"
+                            className="flex items-start space-x-4 p-4 border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-sm cursor-pointer group transition-all duration-200 bg-white"
                             onClick={() => handleExistingBookSelect(book)}
                           >
-                            {(book.thumbnail || book.coverImage) && (
-                              <img
-                                src={book.coverImage || book.thumbnail || ""}
-                                alt={book.title}
-                                className="h-16 w-12 object-cover rounded flex-shrink-0"
-                              />
-                            )}
-                            <div className="flex-1 min-w-0">
-                              <div className="font-medium text-sm  truncate">
+                            <div className="flex-shrink-0">
+                              {book.thumbnail || book.coverImage ? (
+                                <img
+                                  src={book.coverImage || book.thumbnail || ""}
+                                  alt={book.title}
+                                  className="h-20 w-14 object-cover rounded-lg shadow-sm"
+                                />
+                              ) : (
+                                <div className="h-20 w-14 bg-gray-100 rounded-lg flex items-center justify-center">
+                                  <BookOpen className="h-6 w-6 text-gray-400" />
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0 space-y-1">
+                              <div className="font-semibold text-sm text-gray-900 truncate">
                                 {book.title}
                               </div>
-                              <div className="text-xs text-gray-500 truncate">
+                              <div className="text-xs text-gray-600 truncate">
                                 by{" "}
                                 {book.authors?.join(", ") || "Unknown Author"}
                               </div>
                               {book.publishedDate && (
-                                <div className="text-xs text-gray-400">
+                                <div className="text-xs text-gray-500">
                                   Published: {book.publishedDate}
                                 </div>
                               )}
                             </div>
-                            <Check className="h-4 w-4 text-green-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <div className="flex-shrink-0 flex items-center">
+                              <div className="p-2 rounded-full bg-green-50 opacity-0 group-hover:opacity-100 transition-all duration-200">
+                                <Check className="h-4 w-4 text-green-600" />
+                              </div>
+                            </div>
                           </div>
                         ))}
                       </div>
