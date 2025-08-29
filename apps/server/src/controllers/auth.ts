@@ -230,17 +230,15 @@ export const resetPassword = async (c: Context) => {
     algorithm: "argon2id",
   });
 
-  await db.transaction(async (tx) => {
-    await tx
-      .update(users)
-      .set({ passwordHash })
-      .where(eq(users.id, resetRecord.userId));
+  await db
+    .update(users)
+    .set({ passwordHash })
+    .where(eq(users.id, resetRecord.userId));
 
-    await tx
-      .update(passwordResets)
-      .set({ usedAt: new Date() })
-      .where(eq(passwordResets.id, resetRecord.id));
-  });
+  await db
+    .update(passwordResets)
+    .set({ usedAt: new Date() })
+    .where(eq(passwordResets.id, resetRecord.id));
 
   return c.json({ message: "Password reset successfully" });
 };
