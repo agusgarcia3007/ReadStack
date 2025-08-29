@@ -14,3 +14,15 @@ export const useAddBookFromGoogle = () => {
     onError: catchAxiosError,
   });
 };
+
+export const useCreateCustomBook = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (formData: FormData) => BooksService.createCustomBook(formData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["books"] });
+    },
+    onError: catchAxiosError,
+  });
+};

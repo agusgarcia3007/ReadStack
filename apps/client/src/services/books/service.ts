@@ -85,4 +85,15 @@ export class BooksService {
     const { data } = await http.post("/books/from-google", bookData);
     return data;
   }
+
+  public static async createCustomBook(
+    formData: FormData
+  ): Promise<{ success: boolean; data: Book; message: string }> {
+    const { data } = await http.post("/books/custom", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return data;
+  }
 }

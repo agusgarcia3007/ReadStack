@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -22,24 +22,10 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { BookSelectionDialog } from "@/components/books/book-selection-dialog";
 import { useCreatePost } from "@/services/posts/mutations";
-import { useSearchGoogleBooks } from "@/services/books/queries";
-import { useAddBookFromGoogle } from "@/services/books/mutations";
 import type { CreatePostData } from "@/types/posts";
-import type { GoogleBookResult } from "@/services/books/service";
+import type { Book } from "@/services/books/service";
 import { 
   Quote, 
   TrendingUp, 
@@ -47,21 +33,19 @@ import {
   BookOpen, 
   ThumbsUp,
   X,
-  Search,
-  Check,
-  Plus
+  Search
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const postFormSchema = z.object({
   content: z.string().min(1, "Content is required").max(2000, "Content too long"),
   postType: z.enum(["quote", "progress", "review", "thought", "recommendation"]),
+  isPrivate: z.boolean(),
   bookId: z.string().optional(),
   quoteText: z.string().max(1000).optional(),
-  pageNumber: z.coerce.number().min(1).optional(),
-  progressPercentage: z.coerce.number().min(0).max(100).optional(),
-  rating: z.coerce.number().min(1).max(5).optional(),
-  isPrivate: z.boolean().default(false),
+  pageNumber: z.number().min(1).optional(),
+  progressPercentage: z.number().min(0).max(100).optional(),
+  rating: z.number().min(1).max(5).optional(),
 });
 
 type PostFormValues = z.infer<typeof postFormSchema>;
@@ -72,18 +56,11 @@ interface PostComposerFormProps {
 }
 
 export function PostComposerForm({ onSuccess, className }: PostComposerFormProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [bookSearchQuery, setBookSearchQuery] = useState("");
-  const [selectedBook, setSelectedBook] = useState<GoogleBookResult | null>(null);
-  const [bookSearchOpen, setBookSearchOpen] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
+  const [selectedBook, setSelectedBook] = useState<Book | null>(null);
+  const [bookDialogOpen, setBookDialogOpen] = useState(false);
 
   const { isPending: isCreatingPost, mutate: createPost } = useCreatePost();
-  const { isPending: isAddingBook, mutate: addBookFromGoogle } = useAddBookFromGoogle();
-  
-  const { data: bookSearchResults } = useSearchGoogleBooks(
-    bookSearchQuery,
-    bookSearchQuery.length > 2
-  );
 
   const form = useForm<PostFormValues>({
     resolver: zodResolver(postFormSchema),
@@ -91,6 +68,11 @@ export function PostComposerForm({ onSuccess, className }: PostComposerFormProps
       content: "",
       postType: "thought",
       isPrivate: false,
+      bookId: undefined,
+      quoteText: undefined,
+      pageNumber: undefined,
+      progressPercentage: undefined,
+      rating: undefined,
     },
   });
 
@@ -112,23 +94,14 @@ export function PostComposerForm({ onSuccess, className }: PostComposerFormProps
       onSuccess: () => {
         form.reset();
         setSelectedBook(null);
-        setIsExpanded(false);
         onSuccess?.();
       },
     });
   };
 
-  const handleBookSelect = (book: GoogleBookResult) => {
-    // First add the book to our database
-    addBookFromGoogle(book, {
-      onSuccess: (response) => {
-        // Set the book ID in the form
-        form.setValue("bookId", response.data.id);
-        setSelectedBook(book);
-        setBookSearchOpen(false);
-        setBookSearchQuery("");
-      },
-    });
+  const handleBookSelect = (book: Book) => {
+    setSelectedBook(book);
+    form.setValue("bookId", book.id);
   };
 
   const getPostTypeIcon = (type: PostFormValues["postType"]) => {
@@ -169,15 +142,8 @@ export function PostComposerForm({ onSuccess, className }: PostComposerFormProps
   return (
     <Card className={cn("w-full", className)}>
       <CardContent className="p-6">
-        <div className="flex justify-between items-center mb-4">
+        <div className="mb-4">
           <h3 className="font-semibold text-gray-900">Create Post</h3>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsExpanded(false)}
-          >
-            <X className="h-4 w-4" />
-          </Button>
         </div>
 
         <Form {...form}>
@@ -244,9 +210,9 @@ export function PostComposerForm({ onSuccess, className }: PostComposerFormProps
               <div className="space-y-2">
                 {selectedBook ? (
                   <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                    {selectedBook.thumbnail && (
+                    {(selectedBook.thumbnail || selectedBook.coverImage) && (
                       <img 
-                        src={selectedBook.thumbnail} 
+                        src={selectedBook.coverImage || selectedBook.thumbnail || ""} 
                         alt={selectedBook.title}
                         className="h-12 w-8 object-cover rounded"
                       />
@@ -270,71 +236,19 @@ export function PostComposerForm({ onSuccess, className }: PostComposerFormProps
                     </Button>
                   </div>
                 ) : (
-                  <Popover open={bookSearchOpen} onOpenChange={setBookSearchOpen}>
-                    <PopoverTrigger asChild>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="w-full justify-start"
-                      >
-                        <Search className="h-4 w-4 mr-2" />
-                        Search for a book...
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[400px] p-0">
-                      <Command>
-                        <CommandInput 
-                          placeholder="Search books..." 
-                          value={bookSearchQuery}
-                          onValueChange={setBookSearchQuery}
-                        />
-                        <CommandList>
-                          <CommandEmpty>
-                            {bookSearchQuery.length > 2 
-                              ? "No books found." 
-                              : "Type to search books..."}
-                          </CommandEmpty>
-                          {bookSearchResults?.data && (
-                            <CommandGroup>
-                              {bookSearchResults.data.map((book) => (
-                                <CommandItem
-                                  key={book.googleBooksId}
-                                  onSelect={() => handleBookSelect(book)}
-                                  className="flex items-start space-x-3 p-3"
-                                >
-                                  {book.thumbnail && (
-                                    <img 
-                                      src={book.thumbnail} 
-                                      alt={book.title}
-                                      className="h-12 w-8 object-cover rounded flex-shrink-0"
-                                    />
-                                  )}
-                                  <div className="flex-1 min-w-0">
-                                    <div className="font-medium text-sm truncate">
-                                      {book.title}
-                                    </div>
-                                    <div className="text-xs text-gray-500 truncate">
-                                      by {book.authors?.join(", ") || "Unknown Author"}
-                                    </div>
-                                    {book.publishedDate && (
-                                      <div className="text-xs text-gray-400">
-                                        {book.publishedDate}
-                                      </div>
-                                    )}
-                                  </div>
-                                  <Plus className="h-4 w-4 flex-shrink-0" />
-                                </CommandItem>
-                              ))}
-                            </CommandGroup>
-                          )}
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full justify-start"
+                    onClick={() => setBookDialogOpen(true)}
+                  >
+                    <Search className="h-4 w-4 mr-2" />
+                    Search or add a book...
+                  </Button>
                 )}
               </div>
               <FormDescription>
-                Select a book to associate with your post.
+                Select a book to associate with your post, or create a new one.
               </FormDescription>
             </FormItem>
 
@@ -372,6 +286,7 @@ export function PostComposerForm({ onSuccess, className }: PostComposerFormProps
                         type="number"
                         placeholder="Page number"
                         {...field}
+                        onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
                       />
                     </FormControl>
                     <FormMessage />
@@ -395,6 +310,7 @@ export function PostComposerForm({ onSuccess, className }: PostComposerFormProps
                         max="100"
                         placeholder="Progress percentage"
                         {...field}
+                        onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
                       />
                     </FormControl>
                     <FormMessage />
@@ -411,7 +327,7 @@ export function PostComposerForm({ onSuccess, className }: PostComposerFormProps
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Rating (1-5 stars)</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value?.toString()}>
+                    <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString()}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select a rating" />
@@ -464,13 +380,17 @@ export function PostComposerForm({ onSuccess, className }: PostComposerFormProps
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => setIsExpanded(false)}
+                  onClick={() => {
+                    form.reset();
+                    setSelectedBook(null);
+                    onSuccess?.();
+                  }}
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
-                  isLoading={isCreatingPost || isAddingBook}
+                  isLoading={isCreatingPost}
                   disabled={!form.formState.isValid}
                 >
                   Post
@@ -479,6 +399,13 @@ export function PostComposerForm({ onSuccess, className }: PostComposerFormProps
             </div>
           </form>
         </Form>
+
+        {/* Book Selection Dialog */}
+        <BookSelectionDialog
+          open={bookDialogOpen}
+          onOpenChange={setBookDialogOpen}
+          onBookSelect={handleBookSelect}
+        />
       </CardContent>
     </Card>
   );

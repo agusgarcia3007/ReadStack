@@ -1,7 +1,7 @@
 import { Context, Handler } from "hono";
 import { db } from "@/db";
 import { books } from "@/db/schema";
-import { eq, ilike, or } from "drizzle-orm";
+import { eq, ilike, or, sql } from "drizzle-orm";
 import { AuthenticatedContext } from "@/lib/endpoint-builder";
 import { uploadFile } from "@/lib/minio";
 import { searchBooks, searchBooksByISBN } from "@/lib/google-books";
@@ -243,7 +243,7 @@ export const getBooks = async (c: Context) => {
       ? baseQuery.where(
           or(
             ilike(books.title, `%${search}%`),
-            ilike(books.authors, `%${search}%`),
+            sql`${books.authors}::text ILIKE ${`%${search}%`}`,
             ilike(books.publisher, `%${search}%`)
           )
         )
