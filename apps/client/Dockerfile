@@ -10,10 +10,10 @@ ENV NPM_CONFIG_FUND=false
 WORKDIR /app
 
 # Copy the files to the container image
-COPY package*.json ./
+COPY package.json ./
 
 # Install packages
-RUN npm ci
+RUN npm i
 
 # Copy local code to the container image.
 COPY . ./
