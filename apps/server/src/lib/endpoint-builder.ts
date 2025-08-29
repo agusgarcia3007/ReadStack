@@ -27,21 +27,21 @@ export interface RouteConfig {
 
 const authMiddleware: MiddlewareHandler = async (c, next) => {
   const authHeader = c.req.header("Authorization");
-  
+
   if (!authHeader?.startsWith("Bearer ")) {
     return c.json({ message: "Token required" }, 401);
   }
 
   const token = authHeader.substring(7);
   const secret = Bun.env.JWT_SECRET;
-  
+
   if (!secret) {
     return c.json({ message: "Server configuration error" }, 500);
   }
 
   try {
     await verify(token, secret);
-    
+
     const tokenRecords = await db
       .select({
         id: tokens.id,
@@ -90,19 +90,19 @@ export function createEndpoint(
   }
 
   if (routes.GET) {
-    app.get(config.path, ...middlewares, routes.GET);
+    app.get(config.path, ...middlewares, routes.GET as Handler);
   }
   if (routes.POST) {
-    app.post(config.path, ...middlewares, routes.POST);
+    app.post(config.path, ...middlewares, routes.POST as Handler);
   }
   if (routes.PUT) {
-    app.put(config.path, ...middlewares, routes.PUT);
+    app.put(config.path, ...middlewares, routes.PUT as Handler);
   }
   if (routes.DELETE) {
-    app.delete(config.path, ...middlewares, routes.DELETE);
+    app.delete(config.path, ...middlewares, routes.DELETE as Handler);
   }
   if (routes.PATCH) {
-    app.patch(config.path, ...middlewares, routes.PATCH);
+    app.patch(config.path, ...middlewares, routes.PATCH as Handler);
   }
 
   return app;
@@ -110,7 +110,7 @@ export function createEndpoint(
 
 export function createRouter(endpoints: Hono[]): Hono {
   const router = new Hono();
-  endpoints.forEach(endpoint => {
+  endpoints.forEach((endpoint) => {
     router.route("/", endpoint);
   });
   return router;
