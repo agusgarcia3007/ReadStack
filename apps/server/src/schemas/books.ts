@@ -2,8 +2,8 @@ import { z } from "zod";
 
 export const bookSearchSchema = z.object({
   query: z.string().min(1, "Search query is required"),
-  maxResults: z.number().min(1).max(40).optional().default(10),
-  startIndex: z.number().min(0).optional().default(0),
+  maxResults: z.coerce.number().min(1).max(40).optional().default(10),
+  startIndex: z.coerce.number().min(0).optional().default(0),
 });
 
 export const createBookSchema = z.object({

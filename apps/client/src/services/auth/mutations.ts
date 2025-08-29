@@ -20,7 +20,7 @@ export const useSignup = () => {
     onSuccess: (data: AuthResponse) => {
       localStorage.setItem(TOKEN, data.token);
       localStorage.setItem(USER, JSON.stringify(data.user));
-      window.location.href = "/dashboard";
+      window.location.href = "/feed";
     },
   });
 };
@@ -32,7 +32,7 @@ export const useLogin = () => {
     onSuccess: (data: AuthResponse) => {
       localStorage.setItem(TOKEN, data.token);
       localStorage.setItem(USER, JSON.stringify(data.user));
-      window.location.href = "/dashboard";
+      window.location.href = "/feed";
     },
   });
 };
