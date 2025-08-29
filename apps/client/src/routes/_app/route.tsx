@@ -29,8 +29,12 @@ function AppLayout() {
     <div className="container max-w-2xl mx-auto py-8 px-4">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl flex items-center gap-2 font-bold text-gray-900">
-          <img src="/logo-black.svg" alt="ReadStack" className="h-8 w-8" />{" "}
+        <h1 className="text-2xl flex items-center gap-2 font-bold ">
+          <img
+            src="/logo-black.svg"
+            alt="ReadStack"
+            className="h-8 w-8 dark:invert"
+          />{" "}
           ReadStack
         </h1>
         <Button onClick={() => setShowComposer(true)}>

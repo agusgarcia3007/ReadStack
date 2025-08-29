@@ -2,18 +2,24 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { useCreatePost } from "@/services/posts/mutations";
 import type { CreatePostData } from "@/types/posts";
-import { 
-  Quote, 
-  TrendingUp, 
-  Star, 
-  BookOpen, 
+import {
+  Quote,
+  TrendingUp,
+  Star,
+  BookOpen,
   ThumbsUp,
   Image,
-  X
+  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -23,11 +29,14 @@ interface PostComposerProps {
 }
 
 export function PostComposer({ onSuccess, className }: PostComposerProps) {
-  const [postType, setPostType] = useState<CreatePostData["postType"]>("thought");
+  const [postType, setPostType] =
+    useState<CreatePostData["postType"]>("thought");
   const [content, setContent] = useState("");
   const [quoteText, setQuoteText] = useState("");
   const [pageNumber, setPageNumber] = useState<number | undefined>();
-  const [progressPercentage, setProgressPercentage] = useState<number | undefined>();
+  const [progressPercentage, setProgressPercentage] = useState<
+    number | undefined
+  >();
   const [rating, setRating] = useState<number | undefined>();
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -75,7 +84,10 @@ export function PostComposer({ onSuccess, className }: PostComposerProps) {
 
   if (!isExpanded) {
     return (
-      <Card className={cn("w-full cursor-pointer", className)} onClick={() => setIsExpanded(true)}>
+      <Card
+        className={cn("w-full cursor-pointer", className)}
+        onClick={() => setIsExpanded(true)}
+      >
         <CardContent className="p-4">
           <div className="flex items-center space-x-3">
             <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
@@ -94,7 +106,7 @@ export function PostComposer({ onSuccess, className }: PostComposerProps) {
     <Card className={cn("w-full", className)}>
       <CardContent className="p-6">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="font-semibold text-gray-900">Create Post</h3>
+          <h3 className="font-semibold">Create Post</h3>
           <Button
             variant="ghost"
             size="sm"
@@ -110,7 +122,9 @@ export function PostComposer({ onSuccess, className }: PostComposerProps) {
             <Label htmlFor="postType">Post Type</Label>
             <Select
               value={postType}
-              onValueChange={(value: CreatePostData["postType"]) => setPostType(value)}
+              onValueChange={(value: CreatePostData["postType"]) =>
+                setPostType(value)
+              }
             >
               <SelectTrigger>
                 <SelectValue>
@@ -173,7 +187,11 @@ export function PostComposer({ onSuccess, className }: PostComposerProps) {
                   type="number"
                   placeholder="Page number"
                   value={pageNumber || ""}
-                  onChange={(e) => setPageNumber(e.target.value ? parseInt(e.target.value) : undefined)}
+                  onChange={(e) =>
+                    setPageNumber(
+                      e.target.value ? parseInt(e.target.value) : undefined
+                    )
+                  }
                   className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md"
                 />
               </div>
@@ -191,7 +209,11 @@ export function PostComposer({ onSuccess, className }: PostComposerProps) {
                 max="100"
                 placeholder="Progress percentage"
                 value={progressPercentage || ""}
-                onChange={(e) => setProgressPercentage(e.target.value ? parseInt(e.target.value) : undefined)}
+                onChange={(e) =>
+                  setProgressPercentage(
+                    e.target.value ? parseInt(e.target.value) : undefined
+                  )
+                }
                 className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md"
               />
             </div>
@@ -203,19 +225,26 @@ export function PostComposer({ onSuccess, className }: PostComposerProps) {
               <Label htmlFor="rating">Rating (1-5 stars)</Label>
               <Select
                 value={rating?.toString() || ""}
-                onValueChange={(value) => setRating(value ? parseInt(value) : undefined)}
+                onValueChange={(value) =>
+                  setRating(value ? parseInt(value) : undefined)
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a rating" />
                 </SelectTrigger>
                 <SelectContent>
-                  {[1, 2, 3, 4, 5].map(num => (
+                  {[1, 2, 3, 4, 5].map((num) => (
                     <SelectItem key={num} value={num.toString()}>
                       <div className="flex items-center space-x-1">
                         {[...Array(num)].map((_, i) => (
-                          <Star key={i} className="h-4 w-4 text-yellow-400 fill-current" />
+                          <Star
+                            key={i}
+                            className="h-4 w-4 text-yellow-400 fill-current"
+                          />
                         ))}
-                        <span className="ml-2">{num} star{num !== 1 ? 's' : ''}</span>
+                        <span className="ml-2">
+                          {num} star{num !== 1 ? "s" : ""}
+                        </span>
                       </div>
                     </SelectItem>
                   ))}
@@ -244,10 +273,7 @@ export function PostComposer({ onSuccess, className }: PostComposerProps) {
               </Button>
             </div>
             <div className="flex items-center space-x-2">
-              <Button
-                variant="outline"
-                onClick={() => setIsExpanded(false)}
-              >
+              <Button variant="outline" onClick={() => setIsExpanded(false)}>
                 Cancel
               </Button>
               <Button

@@ -6,12 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import {
   Form,
@@ -26,20 +26,29 @@ import { BookSelectionDialog } from "@/components/books/book-selection-dialog";
 import { useCreatePost } from "@/services/posts/mutations";
 import type { CreatePostData } from "@/types/posts";
 import type { Book } from "@/services/books/service";
-import { 
-  Quote, 
-  TrendingUp, 
-  Star, 
-  BookOpen, 
+import {
+  Quote,
+  TrendingUp,
+  Star,
+  BookOpen,
   ThumbsUp,
   X,
-  Search
+  Search,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const postFormSchema = z.object({
-  content: z.string().min(1, "Content is required").max(2000, "Content too long"),
-  postType: z.enum(["quote", "progress", "review", "thought", "recommendation"]),
+  content: z
+    .string()
+    .min(1, "Content is required")
+    .max(2000, "Content too long"),
+  postType: z.enum([
+    "quote",
+    "progress",
+    "review",
+    "thought",
+    "recommendation",
+  ]),
   isPrivate: z.boolean(),
   bookId: z.string().optional(),
   quoteText: z.string().max(1000).optional(),
@@ -55,7 +64,10 @@ interface PostComposerFormProps {
   className?: string;
 }
 
-export function PostComposerForm({ onSuccess, className }: PostComposerFormProps) {
+export function PostComposerForm({
+  onSuccess,
+  className,
+}: PostComposerFormProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
   const [bookDialogOpen, setBookDialogOpen] = useState(false);
@@ -86,7 +98,9 @@ export function PostComposerForm({ onSuccess, className }: PostComposerFormProps
       ...(values.bookId && { bookId: values.bookId }),
       ...(values.quoteText && { quoteText: values.quoteText }),
       ...(values.pageNumber && { pageNumber: values.pageNumber }),
-      ...(values.progressPercentage !== undefined && { progressPercentage: values.progressPercentage }),
+      ...(values.progressPercentage !== undefined && {
+        progressPercentage: values.progressPercentage,
+      }),
       ...(values.rating && { rating: values.rating }),
     };
 
@@ -121,8 +135,8 @@ export function PostComposerForm({ onSuccess, className }: PostComposerFormProps
 
   if (!isExpanded) {
     return (
-      <Card 
-        className={cn("w-full cursor-pointer", className)} 
+      <Card
+        className={cn("w-full cursor-pointer", className)}
         onClick={() => setIsExpanded(true)}
       >
         <CardContent className="p-4">
@@ -143,7 +157,7 @@ export function PostComposerForm({ onSuccess, className }: PostComposerFormProps
     <Card className={cn("w-full", className)}>
       <CardContent className="p-6">
         <div className="mb-4">
-          <h3 className="font-semibold text-gray-900">Create Post</h3>
+          <h3 className="font-semibold">Create Post</h3>
         </div>
 
         <Form {...form}>
@@ -155,7 +169,10 @@ export function PostComposerForm({ onSuccess, className }: PostComposerFormProps
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Post Type</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue>
@@ -211,16 +228,21 @@ export function PostComposerForm({ onSuccess, className }: PostComposerFormProps
                 {selectedBook ? (
                   <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                     {(selectedBook.thumbnail || selectedBook.coverImage) && (
-                      <img 
-                        src={selectedBook.coverImage || selectedBook.thumbnail || ""} 
+                      <img
+                        src={
+                          selectedBook.coverImage ||
+                          selectedBook.thumbnail ||
+                          ""
+                        }
                         alt={selectedBook.title}
                         className="h-12 w-8 object-cover rounded"
                       />
                     )}
                     <div className="flex-1">
-                      <h5 className="font-medium text-gray-900">{selectedBook.title}</h5>
+                      <h5 className="font-medium">{selectedBook.title}</h5>
                       <p className="text-sm text-gray-600">
-                        by {selectedBook.authors?.join(", ") || "Unknown Author"}
+                        by{" "}
+                        {selectedBook.authors?.join(", ") || "Unknown Author"}
                       </p>
                     </div>
                     <Button
@@ -286,7 +308,13 @@ export function PostComposerForm({ onSuccess, className }: PostComposerFormProps
                         type="number"
                         placeholder="Page number"
                         {...field}
-                        onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                        onChange={(e) =>
+                          field.onChange(
+                            e.target.value
+                              ? parseInt(e.target.value)
+                              : undefined
+                          )
+                        }
                       />
                     </FormControl>
                     <FormMessage />
@@ -310,7 +338,13 @@ export function PostComposerForm({ onSuccess, className }: PostComposerFormProps
                         max="100"
                         placeholder="Progress percentage"
                         {...field}
-                        onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                        onChange={(e) =>
+                          field.onChange(
+                            e.target.value
+                              ? parseInt(e.target.value)
+                              : undefined
+                          )
+                        }
                       />
                     </FormControl>
                     <FormMessage />
@@ -327,20 +361,28 @@ export function PostComposerForm({ onSuccess, className }: PostComposerFormProps
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Rating (1-5 stars)</FormLabel>
-                    <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString()}>
+                    <Select
+                      onValueChange={(value) => field.onChange(parseInt(value))}
+                      value={field.value?.toString()}
+                    >
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Select a rating" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {[1, 2, 3, 4, 5].map(num => (
+                        {[1, 2, 3, 4, 5].map((num) => (
                           <SelectItem key={num} value={num.toString()}>
                             <div className="flex items-center space-x-1">
                               {[...Array(num)].map((_, i) => (
-                                <Star key={i} className="h-4 w-4 text-yellow-400 fill-current" />
+                                <Star
+                                  key={i}
+                                  className="h-4 w-4 text-yellow-400 fill-current"
+                                />
                               ))}
-                              <span className="ml-2">{num} star{num !== 1 ? 's' : ''}</span>
+                              <span className="ml-2">
+                                {num} star{num !== 1 ? "s" : ""}
+                              </span>
                             </div>
                           </SelectItem>
                         ))}

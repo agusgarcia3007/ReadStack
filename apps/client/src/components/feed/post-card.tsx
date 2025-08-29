@@ -5,17 +5,17 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useLikePost, useUnlikePost } from "@/services/posts/mutations";
 import type { Post } from "@/types/posts";
-import { 
-  Heart, 
-  MessageCircle, 
-  Repeat2, 
-  Share, 
+import {
+  Heart,
+  MessageCircle,
+  Repeat2,
+  Share,
   CheckCircle,
   Quote,
   TrendingUp,
   Star,
   BookOpen,
-  ThumbsUp
+  ThumbsUp,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -28,7 +28,7 @@ interface PostCardProps {
 export function PostCard({ post, isLiked = false }: PostCardProps) {
   const [liked, setLiked] = useState(isLiked);
   const [likesCount, setLikesCount] = useState(post.likesCount);
-  
+
   const { isPending: isLikePending, mutate: likePost } = useLikePost();
   const { isPending: isUnlikePending, mutate: unlikePost } = useUnlikePost();
 
@@ -36,11 +36,11 @@ export function PostCard({ post, isLiked = false }: PostCardProps) {
     if (liked) {
       unlikePost(post.id);
       setLiked(false);
-      setLikesCount(prev => Math.max(0, prev - 1));
+      setLikesCount((prev) => Math.max(0, prev - 1));
     } else {
       likePost(post.id);
       setLiked(true);
-      setLikesCount(prev => prev + 1);
+      setLikesCount((prev) => prev + 1);
     }
   };
 
@@ -100,14 +100,14 @@ export function PostCard({ post, isLiked = false }: PostCardProps) {
             </Avatar>
             <div className="min-w-0 flex-1">
               <div className="flex items-center space-x-2">
-                <h4 className="font-semibold text-gray-900">
+                <h4 className="font-semibold ">
                   {post.user.name || post.user.username || "Unknown User"}
                 </h4>
                 {post.user.isVerified && (
                   <CheckCircle className="h-4 w-4 text-blue-500" />
                 )}
-                <Badge 
-                  variant="secondary" 
+                <Badge
+                  variant="secondary"
                   className={cn(getPostTypeColor(post.postType), "text-xs")}
                 >
                   <div className="flex items-center space-x-1">
@@ -117,7 +117,9 @@ export function PostCard({ post, isLiked = false }: PostCardProps) {
                 </Badge>
               </div>
               <p className="text-sm text-gray-500">
-                {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
+                {formatDistanceToNow(new Date(post.createdAt), {
+                  addSuffix: true,
+                })}
               </p>
             </div>
           </div>
@@ -127,14 +129,14 @@ export function PostCard({ post, isLiked = false }: PostCardProps) {
         {post.book && (
           <div className="flex items-center space-x-3 mb-4 p-3 bg-gray-50 rounded-lg">
             {post.book.thumbnail && (
-              <img 
-                src={post.book.thumbnail} 
+              <img
+                src={post.book.thumbnail}
                 alt={post.book.title}
                 className="h-12 w-8 object-cover rounded"
               />
             )}
             <div>
-              <h5 className="font-medium text-gray-900">{post.book.title}</h5>
+              <h5 className="font-medium ">{post.book.title}</h5>
               <p className="text-sm text-gray-600">
                 by {post.book.authors?.join(", ") || "Unknown Author"}
               </p>
@@ -159,10 +161,12 @@ export function PostCard({ post, isLiked = false }: PostCardProps) {
           <div className="mb-4">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm text-gray-600">Reading Progress</span>
-              <span className="text-sm font-medium">{post.progressPercentage}%</span>
+              <span className="text-sm font-medium">
+                {post.progressPercentage}%
+              </span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">
-              <div 
+              <div
                 className="bg-green-500 h-2 rounded-full transition-all duration-300"
                 style={{ width: `${post.progressPercentage}%` }}
               />
@@ -178,11 +182,15 @@ export function PostCard({ post, isLiked = false }: PostCardProps) {
                 key={i}
                 className={cn(
                   "h-4 w-4",
-                  i < post.rating! ? "text-yellow-400 fill-current" : "text-gray-300"
+                  i < post.rating!
+                    ? "text-yellow-400 fill-current"
+                    : "text-gray-300"
                 )}
               />
             ))}
-            <span className="text-sm text-gray-600 ml-2">{post.rating}/5 stars</span>
+            <span className="text-sm text-gray-600 ml-2">
+              {post.rating}/5 stars
+            </span>
           </div>
         )}
 
@@ -194,8 +202,8 @@ export function PostCard({ post, isLiked = false }: PostCardProps) {
         {/* Image */}
         {post.imageUrl && (
           <div className="mb-4">
-            <img 
-              src={post.imageUrl} 
+            <img
+              src={post.imageUrl}
               alt="Post image"
               className="w-full max-h-96 object-cover rounded-lg"
             />
@@ -215,25 +223,34 @@ export function PostCard({ post, isLiked = false }: PostCardProps) {
               )}
               isLoading={isLikePending || isUnlikePending}
             >
-              <Heart className={cn(
-                "h-4 w-4 mr-1",
-                liked && "fill-current"
-              )} />
+              <Heart className={cn("h-4 w-4 mr-1", liked && "fill-current")} />
               {likesCount}
             </Button>
-            
-            <Button variant="ghost" size="sm" className="text-gray-500 hover:text-blue-500">
+
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-gray-500 hover:text-blue-500"
+            >
               <MessageCircle className="h-4 w-4 mr-1" />
               {post.commentsCount}
             </Button>
-            
-            <Button variant="ghost" size="sm" className="text-gray-500 hover:text-green-500">
+
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-gray-500 hover:text-green-500"
+            >
               <Repeat2 className="h-4 w-4 mr-1" />
               {post.repostsCount}
             </Button>
           </div>
-          
-          <Button variant="ghost" size="sm" className="text-gray-500 hover:text-gray-700">
+
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-gray-500 hover:text-gray-700"
+          >
             <Share className="h-4 w-4" />
           </Button>
         </div>

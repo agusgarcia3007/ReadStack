@@ -12,7 +12,10 @@ interface FeedTimelineProps {
   className?: string;
 }
 
-export function FeedTimeline({ type = "following", className }: FeedTimelineProps) {
+export function FeedTimeline({
+  type = "following",
+  className,
+}: FeedTimelineProps) {
   const { ref, inView } = useInView({
     threshold: 0,
   });
@@ -55,18 +58,20 @@ export function FeedTimeline({ type = "following", className }: FeedTimelineProp
     );
   }
 
-  const posts = data?.pages.flatMap(page => page.posts) ?? [];
+  const posts = data?.pages.flatMap((page) => page.posts) ?? [];
 
   if (posts.length === 0) {
     return (
       <div className={cn("text-center py-12", className)}>
         <div className="max-w-md mx-auto">
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
-            {type === "following" ? "No posts from people you follow" : "No posts to discover"}
+          <h3 className="text-lg font-medium mb-2">
+            {type === "following"
+              ? "No posts from people you follow"
+              : "No posts to discover"}
           </h3>
           <p className="text-gray-500 mb-4">
-            {type === "following" 
-              ? "Follow some users to see their posts in your feed." 
+            {type === "following"
+              ? "Follow some users to see their posts in your feed."
               : "Check back later for new posts to discover."}
           </p>
           <Button onClick={() => refetch()} variant="outline">

@@ -191,7 +191,7 @@ export function BookSelectionDialog({
                   {googleBooksResults?.data &&
                     googleBooksResults.data.length > 0 && (
                       <div>
-                        <h4 className="text-sm font-medium text-gray-900 mb-3 flex items-center">
+                        <h4 className="text-sm font-medium mb-3 flex items-center">
                           <BookOpen className="h-4 w-4 mr-2" />
                           Google Books Results
                         </h4>
@@ -210,7 +210,7 @@ export function BookSelectionDialog({
                                 />
                               )}
                               <div className="flex-1 min-w-0">
-                                <div className="font-medium text-sm text-gray-900 truncate">
+                                <div className="font-medium text-sm  truncate">
                                   {book.title}
                                 </div>
                                 <div className="text-xs text-gray-500 truncate">
@@ -248,7 +248,7 @@ export function BookSelectionDialog({
                         googleBooksResults.data.length > 0 && (
                           <Separator className="my-4" />
                         )}
-                      <h4 className="text-sm font-medium text-gray-900 mb-3 flex items-center">
+                      <h4 className="text-sm font-medium  mb-3 flex items-center">
                         <Check className="h-4 w-4 mr-2" />
                         Your Library
                       </h4>
@@ -267,7 +267,7 @@ export function BookSelectionDialog({
                               />
                             )}
                             <div className="flex-1 min-w-0">
-                              <div className="font-medium text-sm text-gray-900 truncate">
+                              <div className="font-medium text-sm  truncate">
                                 {book.title}
                               </div>
                               <div className="text-xs text-gray-500 truncate">

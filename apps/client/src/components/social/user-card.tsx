@@ -12,14 +12,15 @@ interface UserCardProps {
   compact?: boolean;
 }
 
-export function UserCard({ 
-  user, 
-  isFollowing = false, 
-  showFollowButton = true, 
-  compact = false 
+export function UserCard({
+  user,
+  isFollowing = false,
+  showFollowButton = true,
+  compact = false,
 }: UserCardProps) {
   const { isPending: isFollowPending, mutate: followUser } = useFollowUser();
-  const { isPending: isUnfollowPending, mutate: unfollowUser } = useUnfollowUser();
+  const { isPending: isUnfollowPending, mutate: unfollowUser } =
+    useUnfollowUser();
 
   const handleFollowToggle = () => {
     if (isFollowing) {
@@ -49,7 +50,7 @@ export function UserCard({
           </Avatar>
           <div className="min-w-0 flex-1">
             <div className="flex items-center space-x-1">
-              <p className="text-sm font-medium text-gray-900 truncate">
+              <p className="text-sm font-medium truncate">
                 {user.name || user.username || "Unknown User"}
               </p>
               {user.isVerified && (
@@ -86,7 +87,7 @@ export function UserCard({
             </Avatar>
             <div className="min-w-0 flex-1">
               <div className="flex items-center space-x-2">
-                <h3 className="text-lg font-semibold text-gray-900 truncate">
+                <h3 className="text-lg font-semibold truncate">
                   {user.name || user.username || "Unknown User"}
                 </h3>
                 {user.isVerified && (
