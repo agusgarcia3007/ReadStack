@@ -1,6 +1,8 @@
 import { Hono, Context, MiddlewareHandler, Handler } from "hono";
 import { verify } from "hono/jwt";
-import { prisma } from "./prisma";
+import { db } from "@/db";
+import { tokens, users } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 export interface AuthenticatedContext extends Context {
   user: {
@@ -40,12 +42,28 @@ const authMiddleware: MiddlewareHandler = async (c, next) => {
   try {
     await verify(token, secret);
     
-    const tokenRecord = await prisma.token.findUnique({
-      where: { token },
-      include: { user: true },
-    });
+    const tokenRecords = await db
+      .select({
+        id: tokens.id,
+        revokedAt: tokens.revokedAt,
+        expiresAt: tokens.expiresAt,
+        user: {
+          id: users.id,
+          email: users.email,
+        },
+      })
+      .from(tokens)
+      .innerJoin(users, eq(tokens.userId, users.id))
+      .where(eq(tokens.token, token))
+      .limit(1);
 
-    if (!tokenRecord || tokenRecord.revokedAt || new Date() > tokenRecord.expiresAt) {
+    if (tokenRecords.length === 0) {
+      return c.json({ message: "Invalid or expired token" }, 401);
+    }
+
+    const tokenRecord = tokenRecords[0];
+
+    if (tokenRecord.revokedAt || new Date() > tokenRecord.expiresAt) {
       return c.json({ message: "Invalid or expired token" }, 401);
     }
 
